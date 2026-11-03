@@ -1,0 +1,178 @@
+[
+  {
+    "name": "empty",
+    "input": {},
+    "expected": ""
+  },
+  {
+    "name": "single string",
+    "input": {
+      "integrated_account_id": "abc-123"
+    },
+    "expected": "integrated_account_id=abc-123"
+  },
+  {
+    "name": "number and bool",
+    "input": {
+      "limit": 50,
+      "truncate": true,
+      "archived": false
+    },
+    "expected": "archived=false&limit=50&truncate=true"
+  },
+  {
+    "name": "float",
+    "input": {
+      "ratio": 1.5
+    },
+    "expected": "ratio=1.5"
+  },
+  {
+    "name": "keys are sorted",
+    "input": {
+      "zeta": "1",
+      "alpha": "2",
+      "mid": "3"
+    },
+    "expected": "alpha=2&mid=3&zeta=1"
+  },
+  {
+    "name": "space and symbols",
+    "input": {
+      "q": "hello world & more=yes"
+    },
+    "expected": "q=hello%20world%20%26%20more%3Dyes"
+  },
+  {
+    "name": "reserved chars",
+    "input": {
+      "q": "a+b/c?d#e!f'g(h)i*j~k_l-m.n"
+    },
+    "expected": "q=a%2Bb%2Fc%3Fd%23e%21f%27g%28h%29i%2Aj~k_l-m.n"
+  },
+  {
+    "name": "unicode",
+    "input": {
+      "name": "Zoë 東京"
+    },
+    "expected": "name=Zo%C3%AB%20%E6%9D%B1%E4%BA%AC"
+  },
+  {
+    "name": "empty string",
+    "input": {
+      "name": ""
+    },
+    "expected": "name="
+  },
+  {
+    "name": "null is empty",
+    "input": {
+      "name": null
+    },
+    "expected": "name="
+  },
+  {
+    "name": "nested object",
+    "input": {
+      "filter": {
+        "status": "open",
+        "owner": {
+          "id": "u1"
+        }
+      }
+    },
+    "expected": "filter%5Bowner%5D%5Bid%5D=u1&filter%5Bstatus%5D=open"
+  },
+  {
+    "name": "array of strings",
+    "input": {
+      "ids": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "expected": "ids%5B0%5D=a&ids%5B1%5D=b&ids%5B2%5D=c"
+  },
+  {
+    "name": "array of numbers",
+    "input": {
+      "n": [
+        1,
+        2
+      ]
+    },
+    "expected": "n%5B0%5D=1&n%5B1%5D=2"
+  },
+  {
+    "name": "array of objects",
+    "input": {
+      "sort": [
+        {
+          "field": "name",
+          "dir": "asc"
+        },
+        {
+          "field": "id",
+          "dir": "desc"
+        }
+      ]
+    },
+    "expected": "sort%5B0%5D%5Bdir%5D=asc&sort%5B0%5D%5Bfield%5D=name&sort%5B1%5D%5Bdir%5D=desc&sort%5B1%5D%5Bfield%5D=id"
+  },
+  {
+    "name": "nested array in object",
+    "input": {
+      "filter": {
+        "tags": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    "expected": "filter%5Btags%5D%5B0%5D=x&filter%5Btags%5D%5B1%5D=y"
+  },
+  {
+    "name": "empty array skipped",
+    "input": {
+      "ids": [],
+      "keep": "k"
+    },
+    "expected": "keep=k"
+  },
+  {
+    "name": "empty object skipped",
+    "input": {
+      "filter": {},
+      "keep": "k"
+    },
+    "expected": "keep=k"
+  },
+  {
+    "name": "truto admin filter",
+    "input": {
+      "integration": {
+        "name": {
+          "$in": [
+            "hubspot",
+            "salesforce"
+          ]
+        }
+      },
+      "created_at": {
+        "gt": "2026-01-01T00:00:00.000Z"
+      }
+    },
+    "expected": "created_at%5Bgt%5D=2026-01-01T00%3A00%3A00.000Z&integration%5Bname%5D%5B%24in%5D%5B0%5D=hubspot&integration%5Bname%5D%5B%24in%5D%5B1%5D=salesforce"
+  },
+  {
+    "name": "unified api params",
+    "input": {
+      "integrated_account_id": "ia_1",
+      "limit": 10,
+      "next_cursor": "eyJwYWdlIjoyfQ==",
+      "truto_ignore_remote_data": true
+    },
+    "expected": "integrated_account_id=ia_1&limit=10&next_cursor=eyJwYWdlIjoyfQ%3D%3D&truto_ignore_remote_data=true"
+  }
+]
