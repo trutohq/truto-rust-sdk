@@ -712,3 +712,55 @@ async fn connection_errors_are_retried_then_reported() {
     assert!(matches!(err, Error::Transport(_)), "{err:?}");
     assert_eq!(*calls.lock().unwrap(), vec![(1, None)]);
 }
+
+/// `integration_catalog_page.json` is trimmed from the live catalog: greythr
+/// sends a JSON array as a resource method body, and nativebridge uses a null
+/// header value to remove an inherited header. Both used to fail decoding.
+#[tokio::test]
+async fn integration_catalog_with_array_body_and_null_header_decodes() {
+    let server = MockServer::start().await;
+    let catalog: Value =
+        serde_json::from_str(include_str!("fixtures/integration_catalog_page.json")).unwrap();
+    Mock::given(method("GET"))
+        .and(path("/integration"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(catalog))
+        .mount(&server)
+        .await;
+
+    let integrations = client(&server)
+        .integrations()
+        .list()
+        .collect_all()
+        .await
+        .unwrap();
+    assert_eq!(integrations.len(), 2);
+
+    let resources = |i: usize| {
+        integrations[i]
+            .config
+            .as_ref()
+            .unwrap()
+            .resources
+            .as_ref()
+            .unwrap()
+    };
+    let lov = &resources(0)["lov-greythr"]["list"];
+    assert_eq!(
+        lov.body,
+        Some(json!(["lov::transitiontype", "lov::paytype"]))
+    );
+    let create = &resources(0)["employees"]["create"];
+    assert_eq!(create.body, Some(json!({ "name": "{{body.name}}" })));
+
+    let app = &resources(1)["applications"]["create"];
+    let headers = app.headers.as_ref().unwrap();
+    assert_eq!(headers.get("Content-Type"), Some(&None));
+    assert_eq!(headers.get("X-Mode"), Some(&Some("upload".to_string())));
+    // A null header means "remove the inherited header" and must survive re-encoding.
+    let encoded = serde_json::to_value(app).unwrap();
+    assert_eq!(encoded["headers"]["Content-Type"], Value::Null);
+    assert!(encoded["headers"]
+        .as_object()
+        .unwrap()
+        .contains_key("Content-Type"));
+}

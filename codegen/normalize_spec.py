@@ -6,7 +6,14 @@ OpenAPI that are awkward to emit (allOf, inline objects, inline enums) into a
 flat list of named types, and names the inline request/response bodies of each
 operation so every SDK uses the same type names.
 
-Usage: python3 normalize_spec.py openapi.json > models.json
+Usage: python3 normalize_spec.py openapi.json [overlay.json] > models.json
+
+overlay.json is an OpenAPI Overlay 1.0 document (https://spec.openapis.org/overlay/v1.0.0)
+applied to the spec before normalising. It holds the SDK's fixes for places where the
+published spec does not match what the API returns, so the SDK can ship the fix without
+waiting for the spec. Supported: `target` as a simple JSONPath ($.a.b or $['a']['b'],
+no wildcards or filters), with `update` (deep merge into the target object) or
+`remove: true`.
 
 IR shape:
   {
@@ -26,6 +33,8 @@ IR shape:
           | {"kind": "ref", "name": "Model"}
           | {"kind": "array", "items": TypeRef}
           | {"kind": "map", "values": TypeRef}
+  A map's `values` TypeRef carries "nullable": true when the spec allows null
+  values (for example a header map where null removes an inherited header).
 """
 import json
 import re
@@ -167,7 +176,10 @@ class Normalizer:
                 return {"kind": "ref", "name": self.object_model(hint, schema)}
             addl = schema.get("additionalProperties")
             if isinstance(addl, dict) and addl:
-                return {"kind": "map", "values": self.type_of(addl, hint + "Value")}
+                values = self.type_of(addl, hint + "Value")
+                if addl.get("nullable") and values["kind"] != "any":
+                    values = dict(values, nullable=True)
+                return {"kind": "map", "values": values}
             return {"kind": "map", "values": {"kind": "any"}}
 
         return {"kind": "any"}
@@ -326,8 +338,53 @@ class Normalizer:
                 "response": resp, "list_item": list_item}
 
 
+def parse_target(target):
+    """Split a simple JSONPath ($.a.b, $['a'].b) into keys."""
+    if not target.startswith("$"):
+        raise ValueError(f"overlay target must start with $: {target}")
+    keys, i = [], 1
+    while i < len(target):
+        if target[i] == ".":
+            m = re.match(r"\.([^.\[]+)", target[i:])
+            if not m:
+                raise ValueError(f"bad overlay target: {target}")
+            keys.append(m.group(1))
+            i += m.end()
+        elif target.startswith("['", i):
+            end = target.index("']", i)
+            keys.append(target[i + 2:end])
+            i = end + 2
+        else:
+            raise ValueError(f"unsupported overlay target: {target}")
+    return keys
+
+
+def deep_merge(dst, src):
+    for k, v in src.items():
+        if isinstance(v, dict) and isinstance(dst.get(k), dict):
+            deep_merge(dst[k], v)
+        else:
+            dst[k] = v
+
+
+def apply_overlay(spec, overlay):
+    for action in overlay.get("actions", []):
+        keys = parse_target(action["target"])
+        parent = spec
+        for k in keys[:-1]:
+            parent = parent[k]  # KeyError: the spec changed; fix the overlay
+        if action.get("remove"):
+            parent.pop(keys[-1], None)
+        elif "update" in action:
+            node = parent[keys[-1]] if keys else spec
+            deep_merge(node, action["update"])
+    return spec
+
+
 def main():
     spec = json.load(open(sys.argv[1]))
+    if len(sys.argv) > 2:
+        spec = apply_overlay(spec, json.load(open(sys.argv[2])))
     ir = Normalizer(spec).run()
     json.dump(ir, sys.stdout, indent=1)
     sys.stdout.write("\n")

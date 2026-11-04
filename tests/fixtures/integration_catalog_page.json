@@ -1,0 +1,42 @@
+{
+  "result": [
+    {
+      "id": "greythr-id",
+      "name": "greythr",
+      "category": "hris",
+      "config": {
+        "base_url": "https://api.greythr.com",
+        "resources": {
+          "lov-greythr": {
+            "list": {
+              "method": "post",
+              "path": "/employee/v2/lov",
+              "body": ["lov::transitiontype", "lov::paytype"]
+            }
+          },
+          "employees": {
+            "create": {"method": "post", "path": "/employees", "body": {"name": "{{body.name}}"}}
+          }
+        }
+      }
+    },
+    {
+      "id": "nativebridge-id",
+      "name": "nativebridge",
+      "category": "other",
+      "config": {
+        "headers": {"Accept": "application/json"},
+        "resources": {
+          "applications": {
+            "create": {
+              "method": "post",
+              "path": "/applications",
+              "headers": {"Content-Type": null, "X-Mode": "upload"}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "next_cursor": null
+}

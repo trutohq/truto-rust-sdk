@@ -3654,7 +3654,8 @@
       "kind": "map",
       "values": {
        "kind": "ref",
-       "name": "EnvironmentUnifiedModelResourceOverride"
+       "name": "EnvironmentUnifiedModelResourceOverride",
+       "nullable": true
       }
      },
      "required": false,
@@ -6285,7 +6286,8 @@
      "type": {
       "kind": "map",
       "values": {
-       "kind": "string"
+       "kind": "string",
+       "nullable": true
       }
      },
      "required": false,
@@ -6313,18 +6315,6 @@
      "required": false,
      "nullable": false,
      "description": "How array values are serialized in the query string. `comma` \u2192 `?a=1,2`; `brackets` \u2192 `?a[]=1&a[]=2`; `indices` \u2192 `?a[0]=1&a[1]=2`; `repeat` \u2192 `?a=1&a=2`."
-    },
-    {
-     "name": "body",
-     "type": {
-      "kind": "map",
-      "values": {
-       "kind": "any"
-      }
-     },
-     "required": false,
-     "nullable": false,
-     "description": "Static or templated request body for `post`/`put`/`patch` methods. Values may be any JSON type and may include placeholders. Use `$truto_merge` with `:json` to deep-merge an entire object \u2014 see placeholder syntax."
     },
     {
      "name": "query_schema",
@@ -6553,6 +6543,15 @@
      "required": false,
      "nullable": false,
      "description": "Steps to run before this method's own request: an array of steps run in order, or a\nstring naming a sibling method whose steps are reused. Same step shape as a unified\nmodel mapping's `before`. Accepted and stored so engines that run proxy configs can\nexecute it; **Truto's own proxy does not run it yet**, so on Truto this is inert.\nEach step's `run_if` must parse as JSONata, or the write is a 400."
+    },
+    {
+     "name": "body",
+     "type": {
+      "kind": "any"
+     },
+     "required": false,
+     "nullable": false,
+     "description": "Static or templated request body for `post`/`put`/`patch` methods. Any JSON value (usually an object, sometimes an array) and may include placeholders. Use `$truto_merge` with `:json` to deep-merge an entire object; see placeholder syntax."
     }
    ],
    "additional": null
@@ -6651,7 +6650,8 @@
      "type": {
       "kind": "map",
       "values": {
-       "kind": "string"
+       "kind": "string",
+       "nullable": true
       }
      },
      "required": false,
@@ -7126,18 +7126,6 @@
      "description": ""
     },
     {
-     "name": "body",
-     "type": {
-      "kind": "map",
-      "values": {
-       "kind": "any"
-      }
-     },
-     "required": false,
-     "nullable": false,
-     "description": "Override the request body for this method. Values may include JSONata placeholders."
-    },
-    {
      "name": "query_schema",
      "type": {
       "kind": "any"
@@ -7366,6 +7354,15 @@
      "required": false,
      "nullable": false,
      "description": "Per-environment override for the method's `before` steps. See\n`IntegrationResourceMethod.before`. Arrays are replaced wholesale, not merged per\nstep, so an override of `[]` clears the base method's `before` for this environment.\nStored only; Truto's own proxy does not run it yet."
+    },
+    {
+     "name": "body",
+     "type": {
+      "kind": "any"
+     },
+     "required": false,
+     "nullable": false,
+     "description": "Override the request body for this method. Any JSON value; may include JSONata placeholders."
     }
    ],
    "additional": null
@@ -7416,7 +7413,8 @@
      "type": {
       "kind": "map",
       "values": {
-       "kind": "string"
+       "kind": "string",
+       "nullable": true
       }
      },
      "required": false,
@@ -7505,7 +7503,8 @@
        "kind": "map",
        "values": {
         "kind": "ref",
-        "name": "EnvironmentIntegrationResourceMethod"
+        "name": "EnvironmentIntegrationResourceMethod",
+        "nullable": true
        }
       }
      },
@@ -10749,7 +10748,8 @@
      "type": {
       "kind": "map",
       "values": {
-       "kind": "string"
+       "kind": "string",
+       "nullable": true
       }
      },
      "required": false,
@@ -16271,7 +16271,8 @@
      "type": {
       "kind": "map",
       "values": {
-       "kind": "string"
+       "kind": "string",
+       "nullable": true
       }
      },
      "required": false,

@@ -124,13 +124,16 @@ println!("{} bytes of {:?}", report.body.len(), report.content_type());
 `truto::Query`. Nested values are encoded like the `qs` package
 (`filter[status]=open`, `ids[0]=a`), keys sorted. Repeated `.query` calls merge.
 
+Admin list endpoints filter on related fields with a dotted key, not a nested
+object: the API rejects `integration[name]=...` but accepts `integration.name=...`.
+
 ```rust,no_run
 # use serde_json::json;
 # async fn run(client: truto::Client) -> Result<(), truto::Error> {
-let ias = client
+let zoho_accounts = client
     .integrated_accounts()
     .list()
-    .query(json!({ "integration": { "name": { "$in": ["hubspot", "salesforce"] } } }))
+    .query(json!({ "tenant_id": "acme", "integration.name": "zohocrm" }))
     .collect_all()
     .await?;
 # Ok(()) }
@@ -237,8 +240,8 @@ let contact: Contact = truto::decode(record)?;
 `environment_integration_webhooks`, `integrated_account_webhooks`,
 `unified_api`, `proxy_api`, `custom_api`, `mcp`; plus `client.ping()`.
 
-`logs().list(log_type)` takes the `log_type` the server requires
-(`api_call`, `webhook`, `mcp`, ...).
+`logs().list(log_type)` takes the `log_type` the server requires:
+`unified_proxy_api`, `rapid_bridge`, `webhook`, `mcp` or `sync_job_cron_trigger`.
 
 ## Examples
 
@@ -254,7 +257,7 @@ TRUTO_API_TOKEN=... cargo run --example proxy_and_errors -- <integrated_account_
 updating the spec:
 
 ```sh
-python3 codegen/normalize_spec.py spec/openapi.json > codegen/models.json
+python3 codegen/normalize_spec.py spec/openapi.json spec/overlay.json > codegen/models.json
 python3 codegen/generate_rust.py codegen/models.json > src/models/generated.rs
 ```
 

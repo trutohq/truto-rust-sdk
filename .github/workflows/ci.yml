@@ -26,7 +26,7 @@ jobs:
         run: cargo test
       - name: Generated models are up to date
         run: |
-          python3 codegen/normalize_spec.py spec/openapi.json > codegen/models.json
+          python3 codegen/normalize_spec.py spec/openapi.json spec/overlay.json > codegen/models.json
           python3 codegen/generate_rust.py codegen/models.json > src/models/generated.rs
           git diff --exit-code -- codegen/models.json src/models/generated.rs
 
