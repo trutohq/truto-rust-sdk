@@ -1,0 +1,35 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "Truto SDK fixes to the published OpenAPI spec",
+    "version": "1"
+  },
+  "actions": [
+    {
+      "target": "$.components.schemas.IntegrationResourceMethod.properties.body",
+      "description": "The spec types body as an object, but its own description says values may be any JSON type, and live integrations (greythr) send a JSON array. Typed as any JSON so the integration catalog decodes.",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas.IntegrationResourceMethod.properties",
+      "update": {
+        "body": {
+          "description": "Static or templated request body for `post`/`put`/`patch` methods. Any JSON value (usually an object, sometimes an array) and may include placeholders. Use `$truto_merge` with `:json` to deep-merge an entire object; see placeholder syntax."
+        }
+      }
+    },
+    {
+      "target": "$.components.schemas.EnvironmentIntegrationResourceMethod.properties.body",
+      "description": "Same as IntegrationResourceMethod.body: an override body may be any JSON value.",
+      "remove": true
+    },
+    {
+      "target": "$.components.schemas.EnvironmentIntegrationResourceMethod.properties",
+      "update": {
+        "body": {
+          "description": "Override the request body for this method. Any JSON value; may include JSONata placeholders."
+        }
+      }
+    }
+  ]
+}

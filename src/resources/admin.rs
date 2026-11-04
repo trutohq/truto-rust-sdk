@@ -373,8 +373,10 @@ resource!(
     "log"
 );
 impl Logs<'_> {
-    /// List logs of one type (`api_call`, `webhook`, `mcp`, ...). The server
-    /// requires `log_type`, so it is a parameter here; add filters with `.query(..)`.
+    /// List logs of one type: `unified_proxy_api`, `rapid_bridge`, `webhook`,
+    /// `mcp` or `sync_job_cron_trigger` (the API rejects anything else). The
+    /// server requires `log_type`, so it is a parameter here; add filters with
+    /// `.query(..)`.
     pub fn list(&self, log_type: &str) -> Pager<Log> {
         let mut pager = self.client.pager(Self::PATH);
         pager.query_ref().insert("log_type", log_type);

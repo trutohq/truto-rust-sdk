@@ -4,6 +4,20 @@ All notable changes to this crate are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the crate uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- Listing the full integration catalog no longer fails with "invalid type: sequence, expected a map" or "invalid type: null, expected a string".
+  - A resource method's `body` is now `Option<Value>`, because some integrations (greythr) send a JSON array there.
+  - Maps whose values the spec marks nullable (integration `headers`, override `resources`) now hold `Option<..>`, so a `null` header (which removes an inherited header) decodes and round-trips (nativebridge).
+- The documented log types were wrong (`api_call` is rejected). They are now `unified_proxy_api`, `rapid_bridge`, `webhook`, `mcp` and `sync_job_cron_trigger`.
+- The README's integrated-account filter example used a nested object that the API rejects. It now uses the dotted key `integration.name`.
+
+### Changed
+
+- Fixes to the published spec now live in `spec/overlay.json` (OpenAPI Overlay), applied when regenerating models.
+
 ## [0.1.0] - 2026-11-03
 
 ### Added
