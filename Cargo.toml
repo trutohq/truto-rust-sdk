@@ -6,10 +6,13 @@ rust-version = "1.88"
 description = "Rust SDK for the Truto REST API"
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/trutohq/truto-rust-sdk"
 homepage = "https://truto.one"
-documentation = "https://truto.one/docs"
+documentation = "https://truto.one/docs/sdks/rust"
 keywords = ["truto", "api", "sdk", "unified-api", "integrations"]
 categories = ["api-bindings", "web-programming::http-client"]
+# Model generation inputs and CI config are for working on the SDK, not using it.
+exclude = ["/spec", "/codegen", "/.github"]
 
 [dependencies]
 futures-core = "0.3"

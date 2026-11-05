@@ -1,4 +1,4 @@
-//! Rust SDK for the [Truto](https://truto.one) REST API.
+//! Rust SDK for the [Truto](https://truto.one) REST API. Guide: <https://truto.one/docs/sdks/rust>.
 //!
 //! ```no_run
 //! use futures_util::TryStreamExt;

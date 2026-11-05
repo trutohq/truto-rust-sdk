@@ -6,13 +6,12 @@ pagination.
 
 ## Install
 
-The crate is not published yet. Depend on it by path or git:
-
-```toml
-[dependencies]
-truto = { path = "../truto-rust-sdk" }
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```sh
+cargo add truto
+cargo add tokio --features macros,rt-multi-thread
 ```
+
+Guide: <https://truto.one/docs/sdks/rust>. API reference: <https://docs.rs/truto>.
 
 Minimum supported Rust version: 1.88.
 
