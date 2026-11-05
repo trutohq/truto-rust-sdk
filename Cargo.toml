@@ -8,7 +8,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/trutohq/truto-rust-sdk"
 homepage = "https://truto.one"
-documentation = "https://docs.rs/truto"
+documentation = "https://truto.one/docs/sdks/rust"
 keywords = ["truto", "api", "sdk", "unified-api", "integrations"]
 categories = ["api-bindings", "web-programming::http-client"]
 # Model generation inputs and CI config are for working on the SDK, not using it.

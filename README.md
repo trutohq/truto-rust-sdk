@@ -11,7 +11,7 @@ cargo add truto
 cargo add tokio --features macros,rt-multi-thread
 ```
 
-API docs: <https://docs.rs/truto>
+Guide: <https://truto.one/docs/sdks/rust>. API reference: <https://docs.rs/truto>.
 
 Minimum supported Rust version: 1.88.
 
